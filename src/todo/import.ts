@@ -17,7 +17,7 @@ export const todoFromString = (todoRaw: string): Todo => {
     : undefined;
 
   let title = todo.replace(/\(!{1,3}\)/, "");
-  title = title.replace(/\+([^\s]+)/g, "");
+  title = title.replace(/\+([^\s]+)/g, "").trim();
 
   let date;
 
@@ -25,7 +25,7 @@ export const todoFromString = (todoRaw: string): Todo => {
   const delimitedTodo = todo.match(/\{([^\s\]\}\)]+)\}/);
   if (delimitedTodo) {
     date = new Date(delimitedTodo[1]);
-    title = title.replace(`{${delimitedTodo[1]}}`, "");
+    title = title.replace(`{${delimitedTodo[1]}}`, "").trim();
   }
 
   if (completed) {
@@ -75,7 +75,9 @@ export const parseTodosInAppdata = (
     const todoList = todoContents.split(/\r?\n/);
 
     setTodos((_oldTodos: Todo[]) =>
-      todoList.map((todoRaw, i) => todoFromString(todoRaw))
+      todoList
+        .filter((todoString) => todoString.length > 0)
+        .map((todoRaw, i) => todoFromString(todoRaw))
     );
   } catch (err) {}
 };

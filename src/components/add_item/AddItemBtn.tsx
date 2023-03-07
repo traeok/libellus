@@ -29,15 +29,26 @@ export const AddItemBtn = ({
             newTodo.completed
               ? `[Completed${
                   newTodo.completionDate
-                    ? ` ${newTodo.completionDate.toDateString()}`
+                    ? ` ${newTodo.completionDate.toLocaleDateString(
+                        navigator.language,
+                        { month: "2-digit", day: "2-digit", year: "numeric" }
+                      )}`
                     : ""
                 }] `
               : ""
-          }${newTodo.priority ? `${priorityAsMd(newTodo.priority)} ` : ""}${newTodo.title}${
+          }${priorityAsMd(newTodo.priority)} ${newTodo.title}${
             newTodo.projects
-              ? newTodo.projects?.map((proj) => `+${proj}`).join(" ")
+              ? ` ${newTodo.projects?.map((proj) => `+${proj}`).join(" ")}`
               : ""
-          }${newTodo.date ? ` {Due ${newTodo.date}}` : ""}`
+          }${
+            newTodo.date
+              ? ` {${newTodo.date.toLocaleDateString(navigator.language, {
+                  month: "2-digit",
+                  day: "2-digit",
+                  year: "numeric",
+                })}}`
+              : ""
+          }`
         );
         appendFileSync(localTodoPath, "\n");
       } catch (err) {}
