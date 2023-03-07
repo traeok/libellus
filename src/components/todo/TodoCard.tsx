@@ -53,9 +53,9 @@ export const TodoCard = ({ data }: { data: Todo }) => {
           ))}
         </div> */}
       </div>
-      <div className="flex items-center ml-auto mx-1">
+      <div className="flex items-center ml-auto">
         {complete && completedDate ? (
-          <div className="flex p-1 py-0 mx-1 items-center hover:ring-1 rounded-md ring-zinc-400 dark:ring-zinc-300 bg-zinc-300 dark:bg-zinc-600">
+          <div className="flex p-1 py-0 mr-2 items-center hover:ring-1 rounded-md ring-zinc-400 dark:ring-zinc-300 bg-zinc-300 dark:bg-zinc-600">
             {/* <div className="select-none pointer-events-none p-1 bg-zinc-500 rounded-l-md dark:bg-zinc-400 text-zinc-50 font-bold px-2">
               done
             </div> */}
@@ -67,7 +67,7 @@ export const TodoCard = ({ data }: { data: Todo }) => {
           <div
             className={`${
               complete ? "max-[600px]:hidden" : ""
-            } flex p-1 py-0 mx-1 items-center hover:ring-1 rounded-md ring-zinc-400 dark:ring-zinc-300 bg-zinc-300 dark:bg-zinc-600`}
+            } flex p-1 py-0 mr-1 items-center hover:ring-1 rounded-md ring-zinc-400 dark:ring-zinc-300 bg-zinc-300 dark:bg-zinc-600`}
           >
             {/* <div className="select-none pointer-events-none p-1 bg-zinc-500 rounded-l-md dark:bg-zinc-400 text-zinc-50 font-bold px-2">
               done
@@ -76,14 +76,14 @@ export const TodoCard = ({ data }: { data: Todo }) => {
             <div>{data.date.toLocaleDateString(navigator.language)}</div>
           </div>
         ) : null}
-        <div className="flex items-center mx-1">
+        <div className="flex items-center">
           {data.projects?.map((proj) => (
-            <div className="select-text px-2 mr-1 last:mr-0 rounded-xl text-center bg-teal-500 text-white font-bold">
+            <div className="select-text px-2 mx-1 rounded-xl text-center bg-teal-500 text-white font-bold">
               {proj}
             </div>
           ))}
         </div>
-        {PriorityIcon ? <PriorityIcon size="1.5em" className="ml-1" /> : null}
+        {PriorityIcon ? <PriorityIcon className="ml-1" size="1.5em" /> : null}
       </div>
     </Card>
   );

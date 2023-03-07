@@ -12,19 +12,19 @@ export const enum Priority {
 }
 
 export const PriorityAsSymbol = (priority: Priority) => {
-  switch (priority) {
-    case Priority.Low:
+  switch (priorityAsMd(priority)) {
+    case "(!)":
       return FcLowPriority;
-    case Priority.Medium:
+    case "(!!)":
       return FcMediumPriority;
-    case Priority.High:
+    case "(!!!)":
       return FcHighPriority;
-    case Priority.None:
+    default:
       return null;
   }
 };
 
-export const PriorityAsMd = (priority: Priority) => {
+export const priorityAsMd = (priority: Priority): string => {
   switch (priority) {
     case Priority.Low:
       return "(!)";
@@ -35,4 +35,19 @@ export const PriorityAsMd = (priority: Priority) => {
     case Priority.None:
       return "";
   }
+};
+
+export const priorityFromRegex = (priorityMatch: string | undefined) => {
+  switch (priorityMatch?.length) {
+    case 1:
+      return Priority.Low;
+    case 2:
+      return Priority.Medium;
+    case 3:
+      return Priority.High;
+    default:
+      return Priority.None;
+  }
+
+  return Priority.None;
 };

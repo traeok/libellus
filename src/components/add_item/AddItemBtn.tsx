@@ -2,7 +2,7 @@ import { FaCheck } from "react-icons/fa";
 import { appendFileSync } from "fs";
 import { join as joinPath } from "path";
 import { todoFromString } from "@/todo/import";
-import { PriorityAsSymbol } from "@/types/priority";
+import { priorityAsMd } from "@/types/priority";
 
 export const AddItemBtn = ({
   input,
@@ -25,7 +25,7 @@ export const AddItemBtn = ({
       try {
         appendFileSync(
           localTodoPath,
-          `\n- ${
+          `- ${
             newTodo.completed
               ? `[Completed${
                   newTodo.completionDate
@@ -33,12 +33,13 @@ export const AddItemBtn = ({
                     : ""
                 }] `
               : ""
-          }${newTodo.priority ?? ""} ${newTodo.title}${
+          }${newTodo.priority ? `${priorityAsMd(newTodo.priority)} ` : ""}${newTodo.title}${
             newTodo.projects
               ? newTodo.projects?.map((proj) => `+${proj}`).join(" ")
               : ""
-          } ${newTodo.date ? `{Due ${newTodo.date}}` : ""}`
+          }${newTodo.date ? ` {Due ${newTodo.date}}` : ""}`
         );
+        appendFileSync(localTodoPath, "\n");
       } catch (err) {}
       setTodos([newTodo, ...todos]);
       setAddingItem(false);

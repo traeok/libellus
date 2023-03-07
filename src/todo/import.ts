@@ -1,4 +1,4 @@
-import { Priority } from "@/types/priority";
+import { priorityFromRegex } from "@/types/priority";
 import { Todo } from "@/types/todo";
 import { readFileSync } from "fs";
 import { join as joinPath } from "path";
@@ -9,23 +9,7 @@ export const todoFromString = (todoRaw: string): Todo => {
 
   const priorityMatch = todo.match(/\((!{1,3})\)/);
   const priorityRaw = priorityMatch ? priorityMatch[1] : undefined;
-  let priority = Priority.None;
-
-  if (priorityRaw) {
-    switch (priorityRaw.length) {
-      case 1:
-        priority = Priority.Low;
-        break;
-      case 2:
-        priority = Priority.Medium;
-        break;
-      case 3:
-        priority = Priority.High;
-        break;
-      default:
-        break;
-    }
-  }
+  const priority = priorityFromRegex(priorityRaw);
 
   const projectList = todo.match(/\+([^\s]+)/g);
   const projects = projectList
