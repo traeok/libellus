@@ -116,9 +116,11 @@ ipcMain.handle("open-win", (_, arg) => {
     },
   });
 
-  if (process.env.VITE_DEV_SERVER_URL) {
-    childWindow.loadURL(`${url}#${arg}`);
-  } else {
-    childWindow.loadFile(indexHtml, { hash: arg });
-  }
+  setTimeout(() => {
+    if (process.env.VITE_DEV_SERVER_URL) {
+      childWindow.loadURL(`${url}#${arg}`);
+    } else {
+      childWindow.loadFile(indexHtml, { hash: arg });
+    }
+  }, 100);
 });

@@ -1,12 +1,13 @@
 import ReactMarkdown from "react-markdown";
 import { Card } from "../Card";
 import { TbSquare, TbSquareCheck } from "react-icons/tb";
-import { IconType } from "react-icons";
 import remarkGfm from "remark-gfm";
 import { useState } from "react";
-import { FaCalendarCheck, FaClock, FaRegCalendarCheck } from "react-icons/fa";
+import { FaClock, FaRegCalendarCheck } from "react-icons/fa";
 import { Todo } from "@/types/todo";
 import { PriorityAsSymbol } from "@/types/priority";
+
+import { useDrag } from "react-dnd";
 
 export const TodoCard = ({ data }: { data: Todo }) => {
   const PriorityIcon = PriorityAsSymbol(data.priority);

@@ -3,6 +3,8 @@ import { Todo } from "@/types/todo";
 import { readFileSync } from "fs";
 import { join as joinPath } from "path";
 
+import { env, platform } from "process";
+
 export const todoFromString = (todoRaw: string): Todo => {
   const todo = todoRaw.replace(/\-\s/, "").trim();
   const completed = todo.startsWith("[Completed");
@@ -60,10 +62,10 @@ export const parseTodosInAppdata = (
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>
 ) => {
   const appdataPath =
-    process.env.APPDATA ||
-    (process.platform == "darwin"
-      ? process.env.HOME + "/Library/Preferences"
-      : process.env.HOME + "/.local/share");
+    env.APPDATA ||
+    (platform == "darwin"
+      ? env.HOME + "/Library/Preferences"
+      : env.HOME + "/.local/share");
   const localTodoPath = joinPath(appdataPath, "libellus", "todo.md");
   try {
     const buffer = readFileSync(localTodoPath);

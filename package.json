@@ -46,6 +46,7 @@
   "dependencies": {
     "@headlessui/react": "^1.7.12",
     "@types/styled-components": "^5.1.26",
+    "react-dnd": "^16.0.1",
     "react-icons": "^4.7.1",
     "react-markdown": "^8.0.5",
     "remark-gfm": "^3.0.1",
