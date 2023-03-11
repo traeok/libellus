@@ -8,28 +8,49 @@ import { Todo } from "@/types/todo";
 import { PriorityAsSymbol } from "@/types/priority";
 
 import { useDrag } from "react-dnd";
+import { replaceTodoInAppdata } from "@/todo/export";
 
-export const TodoCard = ({ data }: { data: Todo }) => {
+export const TodoCard = ({
+  data,
+  setTodos,
+}: {
+  data: Todo;
+  setTodos: Function;
+}) => {
   const PriorityIcon = PriorityAsSymbol(data.priority);
-
-  const [complete, setComplete] = useState(data.completed);
-  const [completedDate, setCompletedDate] = useState(data.completionDate);
-  const CheckmarkIcon = complete ? TbSquareCheck : TbSquare;
+  const CheckmarkIcon = data.completed ? TbSquareCheck : TbSquare;
 
   const toggleCompletion = () => {
-    setComplete((val) => {
-      if (!val) {
-        setCompletedDate(new Date());
-      }
+    setTodos((todos) => {
+      const isCompleted = !data.completed;
+      const completionDate = isCompleted ? new Date() : undefined;
 
-      return !val;
+      const newTodos = [...todos].map((todo) => {
+        if (todo === data) {
+          return {
+            ...data,
+            completed: isCompleted,
+            completionDate: completionDate,
+          };
+        }
+
+        return todo;
+      });
+
+      replaceTodoInAppdata({
+        ...data,
+        completed: isCompleted,
+        completionDate: completionDate,
+      });
+
+      return newTodos;
     });
   };
 
   return (
     <Card
       className={`pl-2 select-none mb-2 last:mb-0 ${
-        complete
+        data.completed
           ? "opacity-50 hover:opacity-80"
           : "hover:shadow-md dark:hover:shadow-invert-md hover:ring-1 ring-zinc-300 dark:ring-zinc-600"
       } text-zinc-600 dark:text-zinc-100`}
@@ -55,26 +76,30 @@ export const TodoCard = ({ data }: { data: Todo }) => {
         </div> */}
       </div>
       <div className="flex items-center ml-auto">
-        {complete && completedDate ? (
+        {data.completed && data.completionDate ? (
           <div className="flex p-1 py-0 mr-2 items-center hover:ring-1 rounded-md ring-zinc-400 dark:ring-zinc-300 bg-zinc-300 dark:bg-zinc-600">
             {/* <div className="select-none pointer-events-none p-1 bg-zinc-500 rounded-l-md dark:bg-zinc-400 text-zinc-50 font-bold px-2">
               done
             </div> */}
             <FaRegCalendarCheck className="mr-2" />
-            <div className="pb-[1px]">{completedDate.toLocaleDateString(navigator.language)}</div>
+            <div className="pb-[1px]">
+              {data.completionDate.toLocaleDateString(navigator.language)}
+            </div>
           </div>
         ) : null}
         {data.date ? (
           <div
             className={`${
-              complete ? "max-[600px]:hidden" : ""
+              data.completed ? "max-[600px]:hidden" : ""
             } flex p-1 py-0 mr-1 align-center items-center hover:ring-1 rounded-md ring-zinc-400 dark:ring-zinc-300 bg-zinc-300 dark:bg-zinc-600`}
           >
             {/* <div className="select-none pointer-events-none p-1 bg-zinc-500 rounded-l-md dark:bg-zinc-400 text-zinc-50 font-bold px-2">
               done
             </div> */}
             <FaClock className="mr-2" />
-            <div className="pb-[1px]">{data.date.toLocaleDateString(navigator.language)}</div>
+            <div className="pb-[1px]">
+              {data.date.toLocaleDateString(navigator.language)}
+            </div>
           </div>
         ) : null}
         <div className="flex items-center">

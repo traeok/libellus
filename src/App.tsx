@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useRef, useState } from "react";
+import useDeepCompareEffect from "use-deep-compare-effect";
 import "./App.scss";
 import { TodoCard } from "./components/todo/TodoCard";
 import { Todo } from "@/types/todo";
@@ -16,8 +17,9 @@ import {
   FaSortAlphaDownAlt,
 } from "react-icons/fa";
 import { MdPriorityHigh, MdUpdate } from "react-icons/md";
-import { SortBy } from "@/types/sorting";
+import { SortBy, SortOptions, sortTodos } from "@/types/sorting";
 import { Priority, priorityAsNumber } from "./types/priority";
+import moment from "moment";
 
 const SortDropdown = ({ sort, setSort }) => {
   return (
@@ -44,123 +46,28 @@ const SortDropdown = ({ sort, setSort }) => {
         >
           <Menu.Items className="z-50 absolute right-0 mt-2 w-56 origin-top-right divide-y divide-zinc-400 dark:divide-zinc-100 rounded-md bg-zinc-300 dark:bg-zinc-700 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none text-zinc-800 dark:text-white">
             <div className="px-1 py-1">
-              <Menu.Item>
-                {({ active }) => (
-                  <button
-                    className={`${
-                      active
-                        ? "bg-zinc-400 dark:bg-zinc-600 text-white"
-                        : sort === SortBy.CompletionDate
-                        ? "bg-zinc-500 text-white"
-                        : ""
-                    } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                    onClick={() => setSort(SortBy.CompletionDate)}
-                  >
-                    <FaRegCalendarCheck
-                      className="mr-3 h-5 w-5"
-                      aria-hidden="true"
-                    />
-                    Completion date
-                  </button>
-                )}
-              </Menu.Item>
-              <Menu.Item>
-                {({ active }) => (
-                  <button
-                    className={`${
-                      active
-                        ? "bg-zinc-400 dark:bg-zinc-600 text-white"
-                        : sort === SortBy.DueDate
-                        ? "bg-zinc-500 text-white"
-                        : ""
-                    } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                    onClick={() => setSort(SortBy.DueDate)}
-                  >
-                    <FaClock className="mr-3 h-5 w-5" aria-hidden="true" />
-                    Due date
-                  </button>
-                )}
-              </Menu.Item>
-
-              <Menu.Item>
-                {({ active }) => (
-                  <button
-                    className={`${
-                      active
-                        ? "bg-zinc-400 dark:bg-zinc-600 text-white"
-                        : sort === SortBy.MostRecent
-                        ? "bg-zinc-500 text-white"
-                        : ""
-                    } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                    onClick={() => setSort(SortBy.MostRecent)}
-                  >
-                    <MdUpdate className="mr-3 h-5 w-5" aria-hidden="true" />
-                    Most recent
-                  </button>
-                )}
-              </Menu.Item>
-              <Menu.Item>
-                {({ active }) => (
-                  <button
-                    className={`${
-                      active
-                        ? "bg-zinc-400 dark:bg-zinc-600 text-white"
-                        : sort === SortBy.Priority
-                        ? "bg-zinc-500 text-white"
-                        : ""
-                    } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                    onClick={() => setSort(SortBy.Priority)}
-                  >
-                    <MdPriorityHigh
-                      className="mr-3 h-5 w-5"
-                      aria-hidden="true"
-                    />
-                    Priority
-                  </button>
-                )}
-              </Menu.Item>
-            </div>
-            <div className="px-1 py-1">
-              <Menu.Item>
-                {({ active }) => (
-                  <button
-                    className={`${
-                      active
-                        ? "bg-zinc-400 dark:bg-zinc-600 text-white"
-                        : sort === SortBy.AtoZ
-                        ? "bg-zinc-500 text-white"
-                        : ""
-                    } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                    onClick={() => setSort(SortBy.AtoZ)}
-                  >
-                    <FaSortAlphaDown
-                      className="mr-3 h-5 w-5"
-                      aria-hidden="true"
-                    />
-                    Alphabetical (ascending)
-                  </button>
-                )}
-              </Menu.Item>
-              <Menu.Item>
-                {({ active }) => (
-                  <button
-                    className={`${
-                      active
-                        ? "bg-zinc-400 dark:bg-zinc-600 text-white"
-                        : sort === SortBy.ZtoA
-                        ? "bg-zinc-500 text-white"
-                        : ""
-                    } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                    onClick={() => setSort(SortBy.ZtoA)}
-                  >
-                    <FaSortAlphaDownAlt
-                      className="mr-3 h-5 w-5"
-                      aria-hidden="true"
-                    />
-                    Alphabetical (descending)
-                  </button>
-                )}
-              </Menu.Item>
+              {SortOptions.map((sortOption) => (
+                <Menu.Item as="div" className="mb-1 last:mb-0">
+                  {({ active }) => (
+                    <button
+                      className={`${
+                        active
+                          ? "bg-zinc-400 dark:bg-zinc-600 text-white"
+                          : sort === sortOption.value
+                          ? "bg-zinc-500 text-white"
+                          : ""
+                      } group flex w-full items-center rounded-md p-1 text-sm`}
+                      onClick={() => setSort(sortOption.value)}
+                    >
+                      <sortOption.icon
+                        className="mr-3 h-5 w-5"
+                        aria-hidden="true"
+                      />
+                      {sortOption.title}
+                    </button>
+                  )}
+                </Menu.Item>
+              ))}
             </div>
           </Menu.Items>
         </Transition>
@@ -169,58 +76,6 @@ const SortDropdown = ({ sort, setSort }) => {
   );
 };
 
-const sortTodos = (sort: Exclude<SortBy, SortBy.MostRecent>) => {
-  switch (sort) {
-    case SortBy.CompletionDate:
-      return (a: Todo, b: Todo): number => {
-        if (a.completed) {
-          if (b.completed) {
-            return a.completionDate! < b.completionDate! ? -1 : 1;
-          }
-
-          return -1;
-        }
-
-        if (b.completed) {
-          return 1;
-        }
-
-        return 0;
-      };
-    case SortBy.DueDate:
-      return (a: Todo, b: Todo): number => {
-        if (a.date) {
-          if (b.date) {
-            return a.date < b.date ? -1 : 1;
-          }
-
-          return -1;
-        }
-
-        if (b.date) {
-          return 1;
-        }
-
-        return 0;
-      };
-    case SortBy.Priority:
-      return (a: Todo, b: Todo): number => {
-        if (a.priority === b.priority) {
-          return 0;
-        }
-
-        return priorityAsNumber(a.priority) > priorityAsNumber(b.priority) ? -1 : 1;
-      };
-    case SortBy.AtoZ:
-      return (a: Todo, b: Todo): number => {
-        return a.title < b.title ? -1 : 1;
-      };
-    case SortBy.ZtoA:
-      return (a: Todo, b: Todo): number => {
-        return a.title > b.title ? -1 : 1;
-      };
-  }
-};
 function App() {
   const [sort, setSort] = useState(SortBy.MostRecent);
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -232,13 +87,15 @@ function App() {
     parseTodosInAppdata(setTodos);
   }, []);
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     if (sort === SortBy.MostRecent) {
       let newTodos = [...todos];
-      setSortedTodos(newTodos.reverse());
+      newTodos.reverse();
+      setSortedTodos(newTodos);
     } else {
       let newTodos = [...todos];
-      setSortedTodos(newTodos.sort(sortTodos(sort)));
+      newTodos.sort(sortTodos(sort));
+      setSortedTodos(newTodos);
     }
   }, [sort, todos]);
 
@@ -258,7 +115,7 @@ function App() {
       </div>
       <div className="z-10 w-full px-2 py-4 snap-mandatory snap-y overflow-y-auto h-5/6">
         {sortedTodos.map((todo: Todo, i) => (
-          <TodoCard data={todo} key={`todo-entry-${i}`} />
+          <TodoCard data={todo} key={`todo-entry-${i}`} setTodos={setTodos} />
         ))}
       </div>
       <AddItemDialog
