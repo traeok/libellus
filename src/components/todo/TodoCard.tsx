@@ -61,25 +61,25 @@ export const TodoCard = ({ data }: { data: Todo }) => {
               done
             </div> */}
             <FaRegCalendarCheck className="mr-2" />
-            <div>{completedDate.toLocaleDateString(navigator.language)}</div>
+            <div className="pb-[1px]">{completedDate.toLocaleDateString(navigator.language)}</div>
           </div>
         ) : null}
         {data.date ? (
           <div
             className={`${
               complete ? "max-[600px]:hidden" : ""
-            } flex p-1 py-0 mr-1 items-center hover:ring-1 rounded-md ring-zinc-400 dark:ring-zinc-300 bg-zinc-300 dark:bg-zinc-600`}
+            } flex p-1 py-0 mr-1 align-center items-center hover:ring-1 rounded-md ring-zinc-400 dark:ring-zinc-300 bg-zinc-300 dark:bg-zinc-600`}
           >
             {/* <div className="select-none pointer-events-none p-1 bg-zinc-500 rounded-l-md dark:bg-zinc-400 text-zinc-50 font-bold px-2">
               done
             </div> */}
             <FaClock className="mr-2" />
-            <div>{data.date.toLocaleDateString(navigator.language)}</div>
+            <div className="pb-[1px]">{data.date.toLocaleDateString(navigator.language)}</div>
           </div>
         ) : null}
         <div className="flex items-center">
           {data.projects?.map((proj) => (
-            <div className="select-text px-2 mx-1 rounded-xl text-center bg-teal-500 text-white font-bold">
+            <div className="select-text px-1 mx-1 rounded-xl text-center bg-teal-500 text-white font-bold">
               {proj}
             </div>
           ))}

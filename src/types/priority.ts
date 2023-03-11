@@ -4,12 +4,25 @@ import {
   FcMediumPriority,
 } from "react-icons/fc";
 
-export const enum Priority {
+export enum Priority {
   None = "",
   Low = "low",
   Medium = "medium",
   High = "high",
 }
+
+export const priorityAsNumber = (priority: Priority): number => {
+  switch (priority) {
+    case Priority.None:
+      return 0;
+    case Priority.Low:
+      return 1;
+    case Priority.Medium:
+      return 2;
+    case Priority.High:
+      return 3;
+  }
+};
 
 export const PriorityAsSymbol = (priority: Priority) => {
   switch (priorityAsMd(priority)) {
