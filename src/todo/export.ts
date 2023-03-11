@@ -56,13 +56,16 @@ export const replaceTodoInAppdata = (newTodo: Todo) => {
   const localTodoPath = joinPath(appdataPath, "libellus", "todo.md");
 
   const buffer = readFileSync(localTodoPath).toString();
-  const lines = buffer.split(/\r?\n/).map((line) => {
-    if (line.includes(newTodo.title)) {
-      return buildTodoString(newTodo);
-    }
+  const lines = buffer
+    .split(/\r?\n/)
+    .filter((str) => str && str.length > 0)
+    .map((line) => {
+      if (line.includes(newTodo.title)) {
+        return buildTodoString(newTodo);
+      }
 
-    return line;
-  });
+      return line;
+    });
 
   writeFileSync(localTodoPath, lines.join("\n").concat("\n"));
 };

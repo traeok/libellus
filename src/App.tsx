@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import "./App.scss";
 import { TodoCard } from "./components/todo/TodoCard";
@@ -8,29 +8,41 @@ import { AddItemDialog } from "./components/add_item/AddItemDialog";
 import { MenuBar } from "./components/menu/MenuBar";
 
 import { Menu, Transition } from "@headlessui/react";
-import { FaChevronDown, FaSortDown } from "react-icons/fa";
-import { HiBars3BottomLeft } from "react-icons/hi2";
-import {
-  FaClock,
-  FaRegCalendarCheck,
-  FaSortAlphaDown,
-  FaSortAlphaDownAlt,
-} from "react-icons/fa";
-import { MdPriorityHigh, MdUpdate } from "react-icons/md";
-import { SortBy, SortOptions, sortTodos } from "@/types/sorting";
-import { Priority, priorityAsNumber } from "./types/priority";
-import moment from "moment";
+import { FaSortDown } from "react-icons/fa";
+import { FaSortAmountDown, FaSortAmountUp } from "react-icons/fa";
+import { SortBy, SortDirection, SortOptions, sortTodos } from "@/types/sorting";
 
 const SortDropdown = ({ sort, setSort }) => {
   return (
-    <div className="w-56 text-right mr-2">
-      <Menu as="div" className="relative inline-block text-left">
+    <div className="w-52 flex flex-row-reverse items-center mr-2 text-right select-none">
+      <div
+        className="ml-2 p-2 rounded-md bg-zinc-600 bg-opacity-0 hover:bg-opacity-30 text-zinc-600 dark:text-white cursor-pointer"
+        onClick={() =>
+          setSort({
+            ...sort,
+            direction:
+              sort.direction === SortDirection.Normal
+                ? SortDirection.Reverse
+                : SortDirection.Normal,
+          })
+        }
+      >
+        {sort.direction === SortDirection.Normal ? (
+          <FaSortAmountDown />
+        ) : (
+          <FaSortAmountUp />
+        )}
+      </div>
+      <Menu as="div" className="relative text-right">
         <div>
-          <Menu.Button className="inline-flex w-full justify-center rounded-md bg-zinc-600 bg-opacity-20 px-2 p-1 text-sm font-medium text-zinc-600 dark:text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
-            <HiBars3BottomLeft className="mr-2" size="1.5em" />
-            <span className="mr-1 hide-mobile">Sort by...</span>
+          <Menu.Button className="inline-flex w-fit items-center bg-zinc-600 rounded-md bg-opacity-0 p-2 text-xs text-zinc-600 dark:text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
+            {/* <HiBars3BottomLeft className="mr-2" size="1.5em" /> */}
+            <sort.icon className="mr-3 max-[600px]:mr-1" size="1.5em" />
+            <span className="max-[865px]:hidden mx-1 whitespace-nowrap">
+              {sort.title}
+            </span>
             <FaSortDown
-              className="ml-2 hover:text-zinc-700 dark:hover:text-zinc-100"
+              className="ml-2 mb-1 hover:text-zinc-700 dark:hover:text-zinc-100"
               aria-hidden="true"
             />
           </Menu.Button>
@@ -53,11 +65,13 @@ const SortDropdown = ({ sort, setSort }) => {
                       className={`${
                         active
                           ? "bg-zinc-400 dark:bg-zinc-600 text-white"
-                          : sort === sortOption.value
+                          : sort === sortOption
                           ? "bg-zinc-500 text-white"
                           : ""
                       } group flex w-full items-center rounded-md p-1 text-sm`}
-                      onClick={() => setSort(sortOption.value)}
+                      onClick={() =>
+                        setSort({ ...sortOption, direction: sort.direction })
+                      }
                     >
                       <sortOption.icon
                         className="mr-3 h-5 w-5"
@@ -77,7 +91,10 @@ const SortDropdown = ({ sort, setSort }) => {
 };
 
 function App() {
-  const [sort, setSort] = useState(SortBy.MostRecent);
+  const [sort, setSort] = useState({
+    ...SortOptions[SortBy.MostRecent],
+    direction: SortDirection.Normal,
+  });
   const [todos, setTodos] = useState<Todo[]>([]);
   const [sortedTodos, setSortedTodos] = useState<Todo[]>(todos);
   const [input, setInput] = useState("");
@@ -88,15 +105,18 @@ function App() {
   }, []);
 
   useDeepCompareEffect(() => {
-    if (sort === SortBy.MostRecent) {
-      let newTodos = [...todos];
+    let newTodos = [...todos];
+    if (sort.value === SortBy.MostRecent) {
       newTodos.reverse();
-      setSortedTodos(newTodos);
     } else {
-      let newTodos = [...todos];
-      newTodos.sort(sortTodos(sort));
-      setSortedTodos(newTodos);
+      newTodos.sort(sortTodos(sort.value));
     }
+
+    if (sort.direction === SortDirection.Reverse) {
+      newTodos.reverse();
+    }
+
+    setSortedTodos(newTodos);
   }, [sort, todos]);
 
   return (
@@ -109,9 +129,9 @@ function App() {
         </div>
         <MenuBar setAddingItem={setAddingItem} />
       </div>
-      <div className="flex items-center mb-2">
-        <hr className="ml-2 w-full h-1 bg-zinc-100 border-0 rounded dark:bg-zinc-700" />
+      <div className="flex flex-row-reverse items-center mb-2">
         <SortDropdown sort={sort} setSort={setSort} />
+        <hr className="ml-2 mr-8 grow-0 shrink w-full h-1 bg-zinc-100 border-0 rounded dark:bg-zinc-700" />
       </div>
       <div className="z-10 w-full px-2 py-4 snap-mandatory snap-y overflow-y-auto h-5/6">
         {sortedTodos.map((todo: Todo, i) => (

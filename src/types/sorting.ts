@@ -1,6 +1,7 @@
 import moment from "moment";
 import {
   FaClock,
+  FaExclamation,
   FaRegCalendarCheck,
   FaSortAlphaDown,
   FaSortAlphaDownAlt,
@@ -18,11 +19,16 @@ export enum SortBy {
   ZtoA,
 }
 
+export enum SortDirection {
+  Normal,
+  Reverse,
+}
+
 export const SortOptions = [
   {
     value: SortBy.CompletionDate,
     icon: FaRegCalendarCheck,
-    title: "Completion date",
+    title: "Completed",
   },
   {
     value: SortBy.DueDate,
@@ -36,18 +42,18 @@ export const SortOptions = [
   },
   {
     value: SortBy.Priority,
-    icon: MdPriorityHigh,
+    icon: FaExclamation,
     title: "Priority",
   },
   {
     value: SortBy.AtoZ,
     icon: FaSortAlphaDown,
-    title: "Alphabetical (ascending)",
+    title: "A to Z",
   },
   {
     value: SortBy.ZtoA,
     icon: FaSortAlphaDownAlt,
-    title: "Alphabetical (descending)",
+    title: "Z to A",
   },
 ];
 
@@ -55,6 +61,9 @@ export const sortTodos = (sort: Exclude<SortBy, SortBy.MostRecent>) => {
   switch (sort) {
     case SortBy.CompletionDate:
       return (a: Todo, b: Todo): number => {
+        if (!a.completed && !b.completed) {
+          return 0;
+        }
         if (a.completed) {
           if (b.completed) {
             return moment(a.completionDate).diff(moment(b.completionDate));
