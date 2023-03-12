@@ -27,14 +27,19 @@ const App = () => {
   useDeepCompareEffect(() => {
     let newTodos = [...todos];
     if (sort.value === SortBy.MostRecent) {
-      newTodos.reverse();
+      // leave as-is
     } else {
       newTodos.sort(
         sortTodos(sort.value as Exclude<SortBy, SortBy.MostRecent>)
       );
     }
 
-    if (sort.direction === SortDirection.Reverse) {
+    if (
+      sort.direction ===
+      (sort.value === SortBy.MostRecent
+        ? SortDirection.Normal
+        : SortDirection.Reverse)
+    ) {
       newTodos.reverse();
     }
 
