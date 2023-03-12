@@ -6,9 +6,9 @@ import {
 
 export enum Priority {
   None = "",
-  Low = "low",
-  Medium = "medium",
-  High = "high",
+  Low = "(!)",
+  Medium = "(!!)",
+  High = "(!!!)",
 }
 
 export const priorityAsNumber = (priority: Priority): number => {
@@ -25,28 +25,15 @@ export const priorityAsNumber = (priority: Priority): number => {
 };
 
 export const PriorityAsSymbol = (priority: Priority) => {
-  switch (priorityAsMd(priority)) {
-    case "(!)":
+  switch (priority) {
+    case Priority.Low:
       return FcLowPriority;
-    case "(!!)":
+    case Priority.Medium:
       return FcMediumPriority;
-    case "(!!!)":
+    case Priority.High:
       return FcHighPriority;
     default:
       return null;
-  }
-};
-
-export const priorityAsMd = (priority: Priority): string => {
-  switch (priority) {
-    case Priority.Low:
-      return "(!)";
-    case Priority.Medium:
-      return "(!!)";
-    case Priority.High:
-      return "(!!!)";
-    case Priority.None:
-      return "";
   }
 };
 
@@ -63,4 +50,21 @@ export const priorityFromRegex = (priorityMatch: string | undefined) => {
   }
 
   return Priority.None;
+};
+
+export const findPriority = (input: string): Priority => {
+  const match = input.match(/\((!{1,3})\)/g);
+  if (!match) {
+    return Priority.None;
+  }
+
+  return priorityFromRegex(match[0]);
+};
+
+export const hasPriority = (input: string): boolean => {
+  return /\(!{1,3}\)/g.test(input);
+};
+
+export const removePriority = (input: string): string => {
+  return input.replace(/\(!{1,3}\)/g, "").trim();
 };

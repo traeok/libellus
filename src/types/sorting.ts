@@ -1,4 +1,5 @@
 import moment from "moment";
+import { IconType } from "react-icons";
 import {
   FaClock,
   FaExclamation,
@@ -7,6 +8,7 @@ import {
   FaSortAlphaDownAlt,
 } from "react-icons/fa";
 import { MdPriorityHigh, MdUpdate } from "react-icons/md";
+import { IDropdownOption } from "./menu";
 import { priorityAsNumber } from "./priority";
 import { Todo } from "./todo";
 
@@ -24,7 +26,10 @@ export enum SortDirection {
   Reverse,
 }
 
-export const SortOptions = [
+export type SortOption = IDropdownOption;
+export type SortMenuOption = SortOption & { direction: SortDirection };
+
+export const SortOptions: SortOption[] = [
   {
     value: SortBy.CompletionDate,
     icon: FaRegCalendarCheck,

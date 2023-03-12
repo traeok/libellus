@@ -1,7 +1,6 @@
 import { FaCheck } from "react-icons/fa";
 import { join as joinPath } from "path";
 import { todoFromString } from "@/todo/import";
-import { priorityAsMd } from "@/types/priority";
 
 import { env } from "process";
 import { createAndExportTodo } from "@/todo/export";

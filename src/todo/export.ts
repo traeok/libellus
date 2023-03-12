@@ -1,5 +1,4 @@
 import { todoFromString } from "@/todo/import";
-import { priorityAsMd } from "@/types/priority";
 import { Todo } from "@/types/todo";
 import { appendFileSync, readFileSync, writeFileSync } from "fs";
 import { join as joinPath } from "path";
@@ -17,7 +16,7 @@ export const buildTodoString = (newTodo: Todo): string =>
             : ""
         }] `
       : ""
-  }${priorityAsMd(newTodo.priority)} ${newTodo.title}${
+  }${newTodo.priority} ${newTodo.title}${
     newTodo.projects
       ? ` ${newTodo.projects?.map((proj) => `+${proj}`).join(" ")}`
       : ""
