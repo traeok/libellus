@@ -46,6 +46,19 @@ export const createAndExportTodo = (input: string): Todo => {
   return newTodo;
 };
 
+export const exportTodo = (todo: Todo) => {
+  const appdataPath =
+    env.APPDATA ||
+    (platform == "darwin"
+      ? env.HOME + "/Library/Preferences"
+      : env.HOME + "/.local/share");
+  const localTodoPath = joinPath(appdataPath, "libellus", "todo.md");
+  try {
+    appendFileSync(localTodoPath, buildTodoString(todo));
+    appendFileSync(localTodoPath, "\n");
+  } catch (err) {}
+};
+
 export const replaceTodoInAppdata = (newTodo: Todo) => {
   const appdataPath =
     env.APPDATA ||

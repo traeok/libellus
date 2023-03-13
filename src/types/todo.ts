@@ -6,5 +6,5 @@ export type Todo = {
   date?: Date;
   title: string;
   priority: Priority;
-  projects?: string[];
+  projects: string[];
 };

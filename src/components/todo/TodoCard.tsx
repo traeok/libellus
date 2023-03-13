@@ -2,12 +2,10 @@ import ReactMarkdown from "react-markdown";
 import { Card } from "../Card";
 import { TbSquare, TbSquareCheck } from "react-icons/tb";
 import remarkGfm from "remark-gfm";
-import { useState } from "react";
 import { FaClock, FaRegCalendarCheck } from "react-icons/fa";
 import { Todo } from "@/types/todo";
 import { PriorityAsSymbol } from "@/types/priority";
 
-import { useDrag } from "react-dnd";
 import { replaceTodoInAppdata } from "@/todo/export";
 
 export const TodoCard = ({
@@ -67,13 +65,15 @@ export const TodoCard = ({
         <article className="prose prose-zinc dark:prose-invert prose-h1:mb-1">
           <ReactMarkdown remarkPlugins={[remarkGfm]} children={data.title} />
         </article>
-        {/* <div className={`flex${data.projects ? " py-1" : ""}`}>
+        <div
+          className={`min-[401px]:hidden flex ${data.projects ? " py-1" : ""}`}
+        >
           {data.projects?.map((proj) => (
             <div className="px-2 mr-2 last:mr-0 rounded-xl text-center bg-teal-500 text-white font-bold">
               {proj}
             </div>
           ))}
-        </div> */}
+        </div>
       </div>
       <div className="flex items-center ml-auto">
         {data.completed && data.completionDate ? (
@@ -93,16 +93,13 @@ export const TodoCard = ({
               data.completed ? "max-[600px]:hidden" : ""
             } flex p-1 py-0 mr-1 align-center items-center hover:ring-1 rounded-md ring-zinc-400 dark:ring-zinc-300 bg-zinc-300 dark:bg-zinc-600`}
           >
-            {/* <div className="select-none pointer-events-none p-1 bg-zinc-500 rounded-l-md dark:bg-zinc-400 text-zinc-50 font-bold px-2">
-              done
-            </div> */}
             <FaClock className="mr-2" />
             <div className="pb-[1px]">
               {data.date.toLocaleDateString(navigator.language)}
             </div>
           </div>
         ) : null}
-        <div className="flex items-center">
+        <div className="max-[400px]:hidden flex items-center">
           {data.projects?.map((proj) => (
             <div className="select-text px-1 mx-1 rounded-xl text-center bg-teal-500 text-white font-bold">
               {proj}

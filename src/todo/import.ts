@@ -16,7 +16,7 @@ export const todoFromString = (todoRaw: string): Todo => {
   const projectList = todo.match(/\+([^\s]+)/g);
   const projects = projectList
     ? (projectList as string[]).map((proj) => proj.substring(1))
-    : undefined;
+    : [];
 
   let title = todo.replace(/\(!{1,3}\)/, "");
   title = title.replace(/\+([^\s]+)/g, "").trim();

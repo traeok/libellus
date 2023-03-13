@@ -17,7 +17,6 @@ const App = () => {
   });
   const [todos, setTodos] = useState<Todo[]>([]);
   const [sortedTodos, setSortedTodos] = useState<Todo[]>(todos);
-  const [input, setInput] = useState("");
   const [addingItem, setAddingItem] = useState(false);
 
   useEffect(() => {
@@ -67,9 +66,7 @@ const App = () => {
       </div>
       <AddItemDialog
         addingItem={addingItem}
-        input={input}
         setAddingItem={setAddingItem}
-        setInput={setInput}
         setTodos={setTodos}
         todos={todos}
       />

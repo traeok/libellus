@@ -1,8 +1,9 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useEffect, useState } from "react";
 import {
-  FaCalendarCheck,
+  FaCheck,
   FaClock,
+  FaPlus,
   FaRegCalendarCheck,
   FaTimes,
 } from "react-icons/fa";
@@ -13,19 +14,13 @@ import {
 } from "react-icons/fc";
 import { TbSquare, TbSquareCheck } from "react-icons/tb";
 
-import { AddItemBtn } from "@/components/add_item/AddItemBtn";
-import {
-  findPriority,
-  hasPriority,
-  Priority,
-  priorityAsNumber,
-  removePriority,
-} from "@/types/priority";
+import { Priority } from "@/types/priority";
 import { Dropdown } from "../menu/Dropdown";
 import { IDropdownOption } from "@/types/menu";
 import Datepicker from "react-tailwindcss-datepicker";
 import { DateValueType } from "react-tailwindcss-datepicker/dist/types";
-import { todoFromString } from "@/todo/import";
+import { Todo } from "@/types/todo";
+import { exportTodo } from "@/todo/export";
 
 const PRIORITY_OPTS: IDropdownOption[] = [
   {
@@ -51,90 +46,64 @@ const PRIORITY_OPTS: IDropdownOption[] = [
 
 export const AddItemDialog = ({
   addingItem,
-  input,
   setAddingItem,
-  setInput,
   setTodos,
   todos,
 }) => {
   const [completed, setCompleted] = useState(false);
-  const [completionDate, setCompletionDate] = useState<DateValueType>({
-    startDate: null,
-    endDate: null,
-  });
+  const [completionDate, setCompletionDate] = useState<Date | undefined>();
+  const [completionDatePicker, setCompletionDatePicker] =
+    useState<DateValueType>({
+      startDate: null,
+      endDate: null,
+    });
+  const [date, setDate] = useState<Date | undefined>();
+  const [title, setTitle] = useState("");
   const [priority, setPriority] = useState(PRIORITY_OPTS[0]);
-  const [dueDate, setDueDate] = useState<DateValueType>({
+  const [dueDatePicker, setDueDatePicker] = useState<DateValueType>({
     startDate: null,
     endDate: null,
   });
   const [projects, setProjects] = useState<string[]>([]);
+  const [addingProject, setAddingProject] = useState(false);
+  const [newProject, setNewProject] = useState("");
 
   useEffect(() => {
-    let newInput = input;
-    if (hasPriority(input)) {
-      newInput = removePriority(input);
-    }
-
     switch (priority.value) {
       case Priority.None:
-        setInput(newInput);
         break;
       case Priority.Low:
       case Priority.Medium:
       case Priority.High:
-        setInput(`${priority.value.toString()} `.concat(newInput));
         break;
     }
   }, [priority]);
 
   useEffect(() => {
     if (!completed) {
-      let newInput = input.replace(/\[Completed\s?(.+?)?\]/, "").trim();
-      setInput(newInput);
-      setCompletionDate({
+      setCompletionDatePicker({
         startDate: null,
         endDate: null,
       });
-    } else if (completed) {
-      if (completionDate?.startDate == null) {
-        setInput("[Completed] ".concat(input).trim());
-      }
+      setCompletionDate(undefined);
     }
   }, [completed]);
 
   useEffect(() => {
-    if (completionDate?.startDate) {
-      setCompleted(true);
-      let newInput = input.replace(/\[Completed (.+?)?\]/, "");
-      const newDate = new Date(completionDate.startDate.toString());
+    if (completionDatePicker?.startDate) {
+      const newDate = new Date(completionDatePicker.startDate.toString());
       newDate.setDate(newDate.getDate() + 1);
-      setInput(
-        `[Completed ${newDate.toLocaleDateString(navigator.language)}] `.concat(
-          newInput
-        )
-      );
+      setCompletionDate(newDate);
     }
-  }, [completionDate]);
+  }, [completionDatePicker]);
 
   useEffect(() => {
-    if (dueDate?.startDate) {
-      let newInput = input.replace(/\s\{(.+?)\}/, "").trim();
-      const newDate = new Date(dueDate.startDate.toString());
+    if (dueDatePicker?.startDate) {
+      const newDate = new Date(dueDatePicker.startDate.toString());
       newDate.setDate(newDate.getDate() + 1);
-      setInput(
-        newInput.concat(` {${newDate.toLocaleDateString(navigator.language)}}`)
-      );
+      setDate(newDate);
     }
-  }, [dueDate]);
-
-  useEffect(() => {
-    if (hasPriority(input) && priority.value === Priority.None) {
-      setPriority(PRIORITY_OPTS[priorityAsNumber(findPriority(input))]);
-    }
-
-    const todo = todoFromString(input);
-    setProjects(todo.projects ?? []);
-  }, [input]);
+  }, [dueDatePicker]);
 
   return (
     <Transition appear show={addingItem} as={Fragment}>
@@ -166,7 +135,7 @@ export const AddItemDialog = ({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-md transform rounded-2xl bg-white dark:bg-zinc-900 p-6 text-zinc-600 dark:text-zinc-100 text-left align-middle shadow-xl transition-all">
+              <Dialog.Panel className="w-full max-w-md transform rounded-2xl bg-white dark:bg-zinc-900 p-6 pb-2 text-zinc-600 dark:text-zinc-100 text-left align-middle shadow-xl transition-all">
                 <Dialog.Title as="h3" className="text-lg font-medium leading-6">
                   <div className="flex items-center">
                     Add item
@@ -183,10 +152,10 @@ export const AddItemDialog = ({
                   <input
                     className="w-full rounded-md p-2 bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-100 mb-4"
                     type="text"
-                    placeholder="Start typing..."
-                    value={input}
+                    placeholder="Title"
+                    value={title}
                     onInput={(e) =>
-                      setInput((e.target as HTMLInputElement).value)
+                      setTitle((e.target as HTMLInputElement).value)
                     }
                   />
                   <hr className="mt-2 w-full h-1 bg-zinc-100 border-0 rounded dark:bg-zinc-700" />
@@ -219,9 +188,9 @@ export const AddItemDialog = ({
                         toggleIcon={() => <FaClock />}
                         useRange={false}
                         asSingle
-                        value={dueDate}
+                        value={dueDatePicker}
                         onChange={(value, e) => {
-                          setDueDate(value);
+                          setDueDatePicker(value);
                         }}
                       />
                       <Datepicker
@@ -231,35 +200,71 @@ export const AddItemDialog = ({
                         toggleIcon={() => <FaRegCalendarCheck />}
                         useRange={false}
                         asSingle
-                        value={completionDate}
+                        value={completionDatePicker}
                         onChange={(value, e) => {
-                          setCompletionDate(value);
+                          setCompletionDatePicker(value);
                         }}
                       />
                     </div>
                   </div>
                   <div className="flex flex-col mt-4">
                     <p className="font-medium">Projects</p>
-                    <div className="bg-zinc-200 dark:bg-zinc-600 dark:bg-zinc-800 mt-2 p-2 rounded-md inline-flex">
-                      {projects.length > 0 ? (
+                    <div className="bg-zinc-200 dark:bg-zinc-600 dark:bg-zinc-800 mt-2 p-2 rounded-md flex">
+                      {projects.length > 0 &&
                         projects.map((proj) => (
-                          <div className="w-fit select-text px-2 mx-1 rounded-xl text-center bg-teal-500 text-white font-bold">
+                          <div className="w-fit select-text px-2 py-1 mx-1 rounded-xl text-center bg-teal-500 text-white font-bold">
                             {proj}
                           </div>
-                        ))
-                      ) : (
-                        <div className="text-zinc-500">No projects added</div>
-                      )}
+                        ))}
+                      <div
+                        className="ml-2 h-8 select-none cursor-pointer p-1 mx-1 rounded-xl text-center bg-zinc-600 opacity-75 hover:opacity-100 text-white font-bold"
+                        onClick={() => setAddingProject(true)}
+                      >
+                        <div className="flex items-center w-fit">
+                          <input
+                            className="ml-1 w-28 bg-zinc-600 rounded-md"
+                            type="text"
+                            placeholder="Add new..."
+                            value={newProject}
+                            onInput={(e) =>
+                              setNewProject(
+                                (e.target as HTMLInputElement).value
+                              )
+                            }
+                          />
+                          <FaPlus
+                            className="ml-2 mr-1"
+                            onClick={() => {
+                              setProjects([...projects, newProject]);
+                              setNewProject("");
+                            }}
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
+                  <button
+                    type="button"
+                    className="mt-4 inline-flex items-center justify-center rounded-md border border-transparent bg-green-100 px-2 py-1 text-sm font-medium text-green-900 hover:bg-green-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2"
+                    onClick={() => {
+                      const newTodo: Todo = {
+                        completed,
+                        completionDate,
+                        date,
+                        title,
+                        priority: priority.value as Priority,
+                        projects,
+                      };
+                      exportTodo(newTodo);
+                      setTodos([newTodo, ...todos]);
+                      setAddingItem(false);
+                      setTitle("");
+                    }}
+                  >
+                    <FaCheck className="mr-2 mt-[2px]" />
+                    <div>Add</div>
+                  </button>
                 </div>
-                <AddItemBtn
-                  input={input}
-                  setInput={setInput}
-                  setAddingItem={setAddingItem}
-                  setTodos={setTodos}
-                  todos={todos}
-                />
               </Dialog.Panel>
             </Transition.Child>
           </div>
