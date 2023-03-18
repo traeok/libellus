@@ -68,6 +68,25 @@ export const AddItemDialog = ({
   const [addingProject, setAddingProject] = useState(false);
   const [newProject, setNewProject] = useState("");
 
+  const resetStates = () => {
+    setCompleted(false);
+    setCompletionDate(undefined);
+    setCompletionDatePicker({
+      startDate: null,
+      endDate: null,
+    });
+    setDate(undefined);
+    setTitle("");
+    setPriority(PRIORITY_OPTS[0]);
+    setDueDatePicker({
+      startDate: null,
+      endDate: null,
+    });
+    setProjects([]);
+    setAddingProject(false);
+    setNewProject("");
+  };
+
   useEffect(() => {
     switch (priority.value) {
       case Priority.None:
@@ -182,7 +201,7 @@ export const AddItemDialog = ({
 
                     <div className="w-56">
                       <Datepicker
-                        inputClassName="mt-2 bg-zinc-800 dark:bg-zinc-800"
+                        inputClassName="mt-2 bg-zinc-200 dark:bg-zinc-800"
                         placeholder="Due date"
                         toggleClassName="mt-1"
                         toggleIcon={() => <FaClock />}
@@ -194,7 +213,7 @@ export const AddItemDialog = ({
                         }}
                       />
                       <Datepicker
-                        inputClassName="mt-2 bg-zinc-800 dark:bg-zinc-800"
+                        inputClassName="mt-2 bg-zinc-200 dark:bg-zinc-800"
                         placeholder="Completion date"
                         toggleClassName="mt-1"
                         toggleIcon={() => <FaRegCalendarCheck />}
@@ -209,20 +228,20 @@ export const AddItemDialog = ({
                   </div>
                   <div className="flex flex-col mt-4">
                     <p className="font-medium">Projects</p>
-                    <div className="bg-zinc-200 dark:bg-zinc-600 dark:bg-zinc-800 mt-2 p-2 rounded-md flex">
+                    <div className="bg-zinc-200 dark:bg-zinc-600 dark:bg-zinc-800 mt-2 p-2 rounded-md flex flex-wrap w-full">
                       {projects.length > 0 &&
                         projects.map((proj) => (
-                          <div className="w-fit select-text px-2 py-1 mx-1 rounded-xl text-center bg-teal-500 text-white font-bold">
+                          <div className="w-fit select-text px-2 py-1 m-1 rounded-xl text-center bg-teal-500 text-white font-bold">
                             {proj}
                           </div>
                         ))}
                       <div
-                        className="ml-2 h-8 select-none cursor-pointer p-1 mx-1 rounded-xl text-center bg-zinc-600 opacity-75 hover:opacity-100 text-white font-bold"
+                        className="h-8 select-none cursor-pointer p-1 m-1 rounded-xl text-center bg-zinc-400 dark:bg-zinc-600 opacity-75 hover:opacity-100 text-white font-bold"
                         onClick={() => setAddingProject(true)}
                       >
                         <div className="flex items-center w-fit">
                           <input
-                            className="ml-1 w-28 bg-zinc-600 rounded-md"
+                            className="ml-1 w-24 placeholder:text-white bg-zinc-400 dark:bg-zinc-600 rounded-md"
                             type="text"
                             placeholder="Add new..."
                             value={newProject}
@@ -257,8 +276,7 @@ export const AddItemDialog = ({
                       };
                       exportTodo(newTodo);
                       setTodos([newTodo, ...todos]);
-                      setAddingItem(false);
-                      setTitle("");
+                      resetStates();
                     }}
                   >
                     <FaCheck className="mr-2 mt-[2px]" />
