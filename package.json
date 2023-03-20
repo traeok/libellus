@@ -1,6 +1,6 @@
 {
   "name": "libellus",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "main": "dist-electron/main/index.js",
   "description": "Simple to-do app using Electron, React and Vite.",
   "author": "traeok <trae@trae.is>",
