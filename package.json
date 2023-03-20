@@ -1,59 +1,41 @@
 {
-  "name": "libellus",
-  "version": "1.0.0",
-  "main": "dist-electron/main/index.js",
-  "description": "Simple to-do app using Electron, React and Vite.",
-  "author": "traeok <trae@trae.is>",
-  "license": "MIT",
+  "name": "capacitor-template-remix-ts",
   "private": true,
-  "debug": {
-    "env": {
-      "VITE_DEV_SERVER_URL": "http://127.0.0.1:7777/"
-    }
-  },
+  "description": "",
+  "license": "",
+  "sideEffects": false,
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build && electron-builder",
-    "preview": "vite preview",
-    "pree2e": "vite build --mode=test",
-    "e2e": "playwright test",
-    "format": "prettier --write src/**/*.{ts,tsx}"
-  },
-  "devDependencies": {
-    "@playwright/test": "^1.31.0",
-    "@tailwindcss/typography": "^0.5.9",
-    "@types/react": "^18.0.28",
-    "@types/react-dom": "^18.0.11",
-    "@vitejs/plugin-react": "^3.1.0",
-    "autoprefixer": "^10.4.13",
-    "electron": "^23.1.1",
-    "electron-builder": "^23.6.0",
-    "postcss": "^8.4.21",
-    "prettier": "^2.8.4",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "sass": "^1.58.3",
-    "tailwindcss": "^3.2.7",
-    "typescript": "^4.9.5",
-    "vite": "^4.1.4",
-    "vite-electron-plugin": "^0.8.2",
-    "vite-plugin-electron": "^0.11.1",
-    "vite-plugin-electron-renderer": "^0.12.1"
-  },
-  "engines": {
-    "node": "^14.18.0 || >=16.0.0"
+    "build": "remix build",
+    "dev": "remix dev",
+    "postinstall": "remix-esbuild-override",
+    "start": "remix-serve build"
   },
   "dependencies": {
-    "@headlessui/react": "^1.7.12",
+    "@capacitor/android": "^3.4.3",
+    "@capacitor/core": "^3.4.3",
+    "@capacitor/ios": "^3.4.3",
+    "@radix-ui/colors": "^0.1.8",
+    "@radix-ui/react-context-menu": "^2.1.3",
+    "@radix-ui/react-icons": "^1.2.0",
+    "@remix-run/node": "^1.3.5",
+    "@remix-run/react": "^1.3.5",
+    "@remix-run/serve": "^1.3.5",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "styled-components": "^5.3.9"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^3.4.3",
+    "@remix-run/dev": "^1.3.5",
+    "@remix-run/eslint-config": "^1.3.5",
+    "@types/react": "^18.0.1",
+    "@types/react-dom": "^18.0.0",
     "@types/styled-components": "^5.1.26",
-    "dayjs": "^1.11.7",
-    "moment": "^2.29.4",
-    "react-dnd": "^16.0.1",
-    "react-icons": "^4.7.1",
-    "react-markdown": "^8.0.5",
-    "react-tailwindcss-datepicker": "^1.5.1",
-    "remark-gfm": "^3.0.1",
-    "styled-components": "^5.3.6",
-    "use-deep-compare-effect": "^1.8.1"
+    "eslint": "^8.11.0",
+    "remix-esbuild-override": "^3.0.4",
+    "typescript": "^4.6.3"
+  },
+  "engines": {
+    "node": ">=14"
   }
 }
